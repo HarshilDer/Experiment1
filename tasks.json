@@ -1,14 +1,8 @@
 [
     {
-        "title": "Brushing teeth",
-        "done": true
-    },
-    {
-        "title": "making tea",
-        "done": true
-    },
-    {
-        "title": "sutta break",
-        "done": false
+        "title": "Classes ",
+        "done": false,
+        "priority": "High",
+        "date": "2026-01-12"
     }
 ]

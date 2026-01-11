@@ -3,20 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tasks</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <title>Notion Planner</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
     <style>
         :root {
-            /* Notion Color Palette */
             --bg-color: #FFFFFF;
             --text-main: #37352F;
             --text-secondary: #9B9A97;
-            --hover-bg: #EFEFED; /* The specific grey Notion uses on hover */
+            --hover-bg: #EFEFED;
             --border-color: #E9E9E7;
-            --checkbox-border: #37352F;
             --link-blue: #2383E2;
+
+            /* Notion Tag Colors */
+            --tag-red-bg: #FFD5D5; --tag-red-text: #6E3630;
+            --tag-yellow-bg: #FBEECC; --tag-yellow-text: #89632A;
+            --tag-green-bg: #DBEDDB; --tag-green-text: #2B593F;
+            --tag-gray-bg: #E3E2E0; --tag-gray-text: #5A5A55;
         }
 
         body {
@@ -26,177 +30,117 @@
             margin: 0;
             display: flex;
             justify-content: center;
-            padding-top: 80px;
-            -webkit-font-smoothing: antialiased; /* Makes font crisp */
+            padding-top: 60px;
+            padding-bottom: 60px;
         }
 
-        .page-container {
-            width: 100%;
-            max-width: 700px; /* Notion documents are usually 700-900px wide */
-            padding: 0 20px;
-        }
+        .page-container { width: 100%; max-width: 800px; padding: 0 20px; }
 
-        /* --- Header Styling --- */
-        .header {
-            margin-bottom: 40px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid var(--border-color);
-        }
+        /* Header */
+        .header { margin-bottom: 40px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color); }
+        .cover-icon { font-size: 78px; display: block; margin-bottom: 10px;}
+        h1 { font-weight: 700; font-size: 40px; margin: 0; letter-spacing: -1px; }
 
-        .cover-icon {
-            font-size: 78px;
-            margin-bottom: 10px;
-            display: block;
-        }
-
-        h1 {
-            font-weight: 700;
-            font-size: 40px;
-            margin: 0;
-            color: var(--text-main);
-            letter-spacing: -1px;
-        }
-
-        /* --- Input Form (The "New Task" block) --- */
-        .add-task-form {
-            display: flex;
-            align-items: center;
-            padding: 8px 4px;
-            margin-bottom: 20px;
-            color: var(--text-secondary);
-            transition: color 0.2s;
-        }
-
-        .add-task-form:focus-within {
-            color: var(--text-main);
-        }
-
-        .plus-icon {
-            font-size: 20px;
-            margin-right: 12px;
-            color: inherit;
-        }
-
-        input[type="text"] {
-            border: none;
-            outline: none;
-            font-size: 16px;
-            font-family: 'Inter', sans-serif;
-            width: 100%;
-            background: transparent;
-            color: var(--text-main);
-        }
-
-        input[type="text"]::placeholder {
-            color: var(--text-secondary);
-            font-weight: 400;
-        }
-
-        /* Hide the actual submit button to keep it clean (Enter key works) */
-        button[type="submit"] {
-            display: none;
-        }
-
-        /* --- Task List --- */
-        ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
+        /* --- Task List Styling --- */
+        ul { list-style: none; padding: 0; margin-bottom: 40px; }
 
         li {
-            display: flex;
-            align-items: flex-start; /* Aligns items to top for multiline text */
-            padding: 6px 4px;
-            border-radius: 4px;
-            margin-bottom: 2px;
-            transition: background 0.1s;
-            group: task-row; /* Used for hover logic */
+            display: flex; align-items: center; padding: 6px 4px;
+            border-radius: 4px; margin-bottom: 2px; transition: background 0.1s;
         }
+        li:hover { background-color: var(--hover-bg); }
+        li:hover .delete-btn { opacity: 1; }
 
-        li:hover {
-            background-color: var(--hover-bg);
-        }
-
-        /* --- Custom Checkbox Logic --- */
-        .checkbox-link {
-            text-decoration: none;
-            margin-right: 12px;
-            margin-top: 3px; /* visual alignment */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* The Box */
+        /* Checkbox */
+        .checkbox-link { text-decoration: none; margin-right: 12px; display: flex; align-items: center; }
         .checkbox-box {
-            width: 16px;
-            height: 16px;
-            border: 2px solid var(--text-main); /* Dark border */
-            border-radius: 3px; /* Slightly rounded corners */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background 0.2s, border 0.2s;
+            width: 16px; height: 16px; border: 2px solid var(--text-main); border-radius: 3px;
+            display: flex; align-items: center; justify-content: center; transition: 0.2s;
         }
+        .checked .checkbox-box { background-color: var(--link-blue); border-color: var(--link-blue); }
+        .checked .checkbox-box i { color: white; font-size: 12px; font-weight: bold; }
 
-        /* Checked State */
-        .checked .checkbox-box {
-            background-color: var(--link-blue);
-            border-color: var(--link-blue);
-        }
+        .task-content { flex-grow: 1; display: flex; align-items: center; gap: 10px; }
+        .task-text { font-size: 16px; color: var(--text-main); }
+        .task-text.done { text-decoration: line-through; color: var(--text-secondary); }
 
-        .checked .checkbox-box i {
-            color: white;
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-        /* Unchecked State */
-        .unchecked .checkbox-box i {
-            display: none;
-        }
-
-        .unchecked .checkbox-box:hover {
-            background-color: #E2E2E0; /* Subtle hover on checkbox */
-        }
-
-        /* --- Task Text --- */
-        .task-text {
-            flex-grow: 1;
-            font-size: 16px;
-            line-height: 1.5;
-            color: var(--text-main);
-            word-break: break-word;
-        }
-
-        .task-text.done {
-            text-decoration: line-through;
-            color: var(--text-secondary);
-        }
-
-        /* --- Delete Button (Hidden by default) --- */
+        /* Delete Button */
         .delete-btn {
-            opacity: 0; /* Hidden */
-            color: var(--text-secondary);
-            text-decoration: none;
-            padding: 4px;
-            border-radius: 4px;
-            transition: opacity 0.2s, background 0.2s;
-            font-size: 18px;
-            display: flex;
-            align-items: center;
+            opacity: 0; color: var(--text-secondary); text-decoration: none;
+            padding: 4px; font-size: 18px; transition: 0.2s;
+        }
+        .delete-btn:hover { color: #EB5757; }
+
+        /* --- Tags Styling --- */
+        .tag {
+            font-size: 12px; padding: 2px 8px; border-radius: 4px; font-weight: 500;
+            white-space: nowrap;
+        }
+        .tag-High { background: var(--tag-red-bg); color: var(--tag-red-text); }
+        .tag-Medium { background: var(--tag-yellow-bg); color: var(--tag-yellow-text); }
+        .tag-Low { background: var(--tag-green-bg); color: var(--tag-green-text); }
+
+        .date-badge {
+            font-size: 12px; color: var(--text-secondary); display: flex; align-items: center; gap: 4px;
         }
 
-        /* Only show delete button when hovering the ROW (li) */
-        li:hover .delete-btn {
-            opacity: 1;
+        /* --- Add Task Form --- */
+        .add-task-form {
+            display: flex; gap: 10px; align-items: center; padding: 10px;
+            border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 50px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+        .add-task-form input[type="text"] {
+            flex-grow: 1; border: none; outline: none; font-size: 15px; font-family: 'Inter';
+        }
+        /* Custom Select & Date Inputs */
+        select, input[type="date"] {
+            border: none; background: var(--hover-bg); padding: 6px 10px;
+            border-radius: 4px; font-family: 'Inter'; font-size: 13px; color: var(--text-main);
+            outline: none; cursor: pointer;
+        }
+        button {
+            background: var(--text-main); color: white; border: none; padding: 6px 12px;
+            border-radius: 4px; cursor: pointer; font-size: 13px;
         }
 
-        .delete-btn:hover {
-            background-color: #D3D1CB;
-            color: #EB5757;
+        /* --- Calendar Styling --- */
+        .calendar-section { margin-top: 40px; }
+        .calendar-header { font-size: 18px; font-weight: 600; margin-bottom: 15px; }
+
+        .calendar-grid {
+            display: grid; grid-template-columns: repeat(7, 1fr);
+            border-top: 1px solid var(--border-color); border-left: 1px solid var(--border-color);
         }
+
+        .day-header {
+            padding: 10px; font-size: 12px; font-weight: 600; color: var(--text-secondary);
+            border-right: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color);
+            background: #FAFAFA; text-align: center;
+        }
+
+        .calendar-day {
+            min-height: 100px; padding: 8px; vertical-align: top;
+            border-right: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        .calendar-day.empty { background: #fbfbfb; }
+
+        .day-number {
+            font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 5px; display: block;
+        }
+
+        .cal-task-dot {
+            display: block; width: 100%; font-size: 11px; padding: 2px 4px; margin-bottom: 2px;
+            border-radius: 3px; background: var(--hover-bg); color: var(--text-main);
+            text-decoration: none; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+        }
+        .cal-task-dot.done { text-decoration: line-through; opacity: 0.5; }
+        /* Tiny color strip on the side of calendar task based on priority */
+        .cal-task-dot.p-High { border-left: 3px solid var(--tag-red-text); }
+        .cal-task-dot.p-Medium { border-left: 3px solid var(--tag-yellow-text); }
+        .cal-task-dot.p-Low { border-left: 3px solid var(--tag-green-text); }
 
     </style>
 </head>
@@ -205,26 +149,44 @@
     <div class="page-container">
 
         <div class="header">
-            <span class="cover-icon">🥥</span>
-            <h1>Task Board</h1>
+            <span class="cover-icon">🗓️</span>
+            <h1>My Planner</h1>
         </div>
+
+        <form action="/add" method="POST" class="add-task-form">
+            <input type="text" name="title" placeholder="New task name..." autocomplete="off" required>
+
+            <select name="priority">
+                <option value="Low">Low Priority</option>
+                <option value="Medium">Medium</option>
+                <option value="High">High Priority</option>
+            </select>
+
+            <input type="date" name="date" required>
+
+            <button type="submit">Add Task</button>
+        </form>
 
         <ul>
             {% for task in tasks %}
             <li>
-                {% if task.done %}
-                    <a href="/complete/{{ loop.index0 }}" class="checkbox-link checked">
-                        <div class="checkbox-box"><i class="ph-bold ph-check"></i></div>
-                    </a>
-                {% else %}
-                    <a href="/complete/{{ loop.index0 }}" class="checkbox-link unchecked">
-                        <div class="checkbox-box"><i></i></div>
-                    </a>
-                {% endif %}
+                <a href="/complete/{{ loop.index0 }}" class="checkbox-link {{ 'checked' if task.done else 'unchecked' }}">
+                    <div class="checkbox-box"><i class="ph-bold ph-check"></i></div>
+                </a>
 
-                <span class="task-text {{ 'done' if task.done else '' }}">
-                    {{ task.title }}
-                </span>
+                <div class="task-content">
+                    <span class="task-text {{ 'done' if task.done else '' }}">
+                        {{ task.title }}
+                    </span>
+
+                    {% if task.priority %}
+                    <span class="tag tag-{{ task.priority }}">{{ task.priority }}</span>
+                    {% endif %}
+
+                    {% if task.date %}
+                    <span class="date-badge"><i class="ph ph-calendar-blank"></i> {{ task.date }}</span>
+                    {% endif %}
+                </div>
 
                 <a href="/delete/{{ loop.index0 }}" class="delete-btn" title="Delete">
                     <i class="ph ph-trash"></i>
@@ -233,17 +195,36 @@
             {% endfor %}
         </ul>
 
-        <form action="/add" method="POST" class="add-task-form">
-            <i class="ph ph-plus plus-icon"></i>
-            <input type="text" name="title" placeholder="New task..." autocomplete="off" required>
-            <button type="submit">Add</button>
-        </form>
+        <div class="calendar-section">
+            <div class="calendar-header">{{ month_name }}</div>
 
-        {% if not tasks %}
-        <p style="color: var(--text-secondary); margin-left: 36px; font-size: 14px;">
-            Nothing to do. Press Enter to add a task.
-        </p>
-        {% endif %}
+            <div class="calendar-grid">
+                <div class="day-header">MON</div><div class="day-header">TUE</div><div class="day-header">WED</div>
+                <div class="day-header">THU</div><div class="day-header">FRI</div><div class="day-header">SAT</div>
+                <div class="day-header">SUN</div>
+
+                {% for week in calendar_matrix %}
+                    {% for day in week %}
+                        {% if day == 0 %}
+                            <div class="calendar-day empty"></div>
+                        {% else %}
+                            <div class="calendar-day">
+                                <span class="day-number">{{ day }}</span>
+
+                                {% set date_str = "%d-%02d-%02d" % (current_year, current_month, day) %}
+                                {% if tasks_by_date[date_str] %}
+                                    {% for t in tasks_by_date[date_str] %}
+                                        <div class="cal-task-dot p-{{ t.priority }} {{ 'done' if t.done else '' }}">
+                                            {{ t.title }}
+                                        </div>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                {% endfor %}
+            </div>
+        </div>
 
     </div>
 
