@@ -3,24 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Notion Planner</title>
+    <title>Task Planner</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
     <style>
         :root {
-            --bg-color: #FFFFFF;
-            --text-main: #37352F;
+            /* --- NOTION DARK THEME PALETTE --- */
+            --bg-color: #191919;
+            --text-main: #D4D4D4;
             --text-secondary: #9B9A97;
-            --hover-bg: #EFEFED;
-            --border-color: #E9E9E7;
-            --link-blue: #2383E2;
+            --hover-bg: #2F2F2F;
+            --border-color: #2F2F2F;
+            --link-blue: #3A7FCE;
 
-            /* Notion Tag Colors */
-            --tag-red-bg: #FFD5D5; --tag-red-text: #6E3630;
-            --tag-yellow-bg: #FBEECC; --tag-yellow-text: #89632A;
-            --tag-green-bg: #DBEDDB; --tag-green-text: #2B593F;
-            --tag-gray-bg: #E3E2E0; --tag-gray-text: #5A5A55;
+            /* Dark Mode Tags */
+            --tag-red-bg: #502825;    --tag-red-text: #FFD5D5;
+            --tag-yellow-bg: #524227; --tag-yellow-text: #FBEECC;
+            --tag-green-bg: #244030;  --tag-green-text: #DBEDDB;
+            --tag-gray-bg: #37352F;   --tag-gray-text: #E3E2E0;
         }
 
         body {
@@ -39,13 +40,13 @@
         /* Header */
         .header { margin-bottom: 40px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color); }
         .cover-icon { font-size: 78px; display: block; margin-bottom: 10px;}
-        h1 { font-weight: 700; font-size: 40px; margin: 0; letter-spacing: -1px; }
+        h1 { font-weight: 700; font-size: 40px; margin: 0; letter-spacing: -1px; color: #FFFFFF; }
 
         /* --- Task List Styling --- */
         ul { list-style: none; padding: 0; margin-bottom: 40px; }
 
         li {
-            display: flex; align-items: center; padding: 6px 4px;
+            display: flex; align-items: center; padding: 8px 6px;
             border-radius: 4px; margin-bottom: 2px; transition: background 0.1s;
         }
         li:hover { background-color: var(--hover-bg); }
@@ -54,10 +55,15 @@
         /* Checkbox */
         .checkbox-link { text-decoration: none; margin-right: 12px; display: flex; align-items: center; }
         .checkbox-box {
-            width: 16px; height: 16px; border: 2px solid var(--text-main); border-radius: 3px;
+            width: 16px; height: 16px;
+            border: 2px solid var(--text-secondary);
+            border-radius: 3px;
             display: flex; align-items: center; justify-content: center; transition: 0.2s;
         }
-        .checked .checkbox-box { background-color: var(--link-blue); border-color: var(--link-blue); }
+        .checked .checkbox-box {
+            background-color: var(--link-blue);
+            border-color: var(--link-blue);
+        }
         .checked .checkbox-box i { color: white; font-size: 12px; font-weight: bold; }
 
         .task-content { flex-grow: 1; display: flex; align-items: center; gap: 10px; }
@@ -69,7 +75,7 @@
             opacity: 0; color: var(--text-secondary); text-decoration: none;
             padding: 4px; font-size: 18px; transition: 0.2s;
         }
-        .delete-btn:hover { color: #EB5757; }
+        .delete-btn:hover { color: #EB5757; background: rgba(255,255,255,0.05); border-radius: 4px; }
 
         /* --- Tags Styling --- */
         .tag {
@@ -86,27 +92,33 @@
 
         /* --- Add Task Form --- */
         .add-task-form {
-            display: flex; gap: 10px; align-items: center; padding: 10px;
+            display: flex; gap: 10px; align-items: center; padding: 12px;
             border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 50px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+            background: rgba(255,255,255,0.03);
         }
         .add-task-form input[type="text"] {
             flex-grow: 1; border: none; outline: none; font-size: 15px; font-family: 'Inter';
+            background: transparent; color: var(--text-main);
         }
+        .add-task-form input[type="text"]::placeholder { color: var(--text-secondary); }
+
         /* Custom Select & Date Inputs */
         select, input[type="date"] {
             border: none; background: var(--hover-bg); padding: 6px 10px;
             border-radius: 4px; font-family: 'Inter'; font-size: 13px; color: var(--text-main);
             outline: none; cursor: pointer;
         }
+        ::-webkit-calendar-picker-indicator { filter: invert(1); opacity: 0.5; }
+
         button {
-            background: var(--text-main); color: white; border: none; padding: 6px 12px;
-            border-radius: 4px; cursor: pointer; font-size: 13px;
+            background: var(--link-blue); color: white; border: none; padding: 6px 14px;
+            border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: 500;
         }
+        button:hover { opacity: 0.9; }
 
         /* --- Calendar Styling --- */
         .calendar-section { margin-top: 40px; }
-        .calendar-header { font-size: 18px; font-weight: 600; margin-bottom: 15px; }
+        .calendar-header { font-size: 18px; font-weight: 600; margin-bottom: 15px; color: var(--text-main); }
 
         .calendar-grid {
             display: grid; grid-template-columns: repeat(7, 1fr);
@@ -114,9 +126,9 @@
         }
 
         .day-header {
-            padding: 10px; font-size: 12px; font-weight: 600; color: var(--text-secondary);
+            padding: 10px; font-size: 11px; font-weight: 600; color: var(--text-secondary);
             border-right: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color);
-            background: #FAFAFA; text-align: center;
+            background: var(--bg-color); text-align: center; letter-spacing: 0.5px;
         }
 
         .calendar-day {
@@ -125,22 +137,30 @@
             position: relative;
         }
 
-        .calendar-day.empty { background: #fbfbfb; }
+        .calendar-day.empty { background: rgba(255,255,255,0.02); }
 
         .day-number {
-            font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 5px; display: block;
+            font-size: 12px; font-weight: 500; color: var(--text-secondary); margin-bottom: 6px; display: block;
         }
 
         .cal-task-dot {
-            display: block; width: 100%; font-size: 11px; padding: 2px 4px; margin-bottom: 2px;
+            display: block; width: 100%; font-size: 11px; padding: 3px 6px; margin-bottom: 3px;
             border-radius: 3px; background: var(--hover-bg); color: var(--text-main);
             text-decoration: none; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
         }
-        .cal-task-dot.done { text-decoration: line-through; opacity: 0.5; }
-        /* Tiny color strip on the side of calendar task based on priority */
-        .cal-task-dot.p-High { border-left: 3px solid var(--tag-red-text); }
-        .cal-task-dot.p-Medium { border-left: 3px solid var(--tag-yellow-text); }
-        .cal-task-dot.p-Low { border-left: 3px solid var(--tag-green-text); }
+        .cal-task-dot.done { text-decoration: line-through; opacity: 0.4; }
+
+        .cal-task-dot.p-High { border-left: 2px solid var(--tag-red-text); background: rgba(80, 40, 37, 0.5); }
+        .cal-task-dot.p-Medium { border-left: 2px solid var(--tag-yellow-text); background: rgba(82, 66, 39, 0.5); }
+        .cal-task-dot.p-Low { border-left: 2px solid var(--tag-green-text); background: rgba(36, 64, 48, 0.5); }
+
+        @media (max-width: 600px) {
+            .calendar-grid { display: flex; flex-direction: column; }
+            .day-header { display: none; }
+            .calendar-day { min-height: auto; padding: 15px; border-right: none; }
+            .calendar-day.empty { display: none; }
+            .day-number { font-size: 14px; margin-bottom: 10px; color: var(--text-main); font-weight: bold; }
+        }
 
     </style>
 </head>
@@ -149,7 +169,7 @@
     <div class="page-container">
 
         <div class="header">
-            <span class="cover-icon">🗓️</span>
+            <span class="cover-icon">📒</span>
             <h1>My Planner</h1>
         </div>
 
