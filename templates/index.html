@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Python Task Manager</title>
+    <style>
+        body { font-family: sans-serif; margin: 40px; background: #f4f4f4; }
+        .container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .done { text-decoration: line-through; color: gray; }
+        ul { list-style: none; padding: 0; }
+        li { padding: 10px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>✅ Task Manager</h2>
+        <form action="/add" method="POST">
+            <input type="text" name="title" placeholder="New Task..." required>
+            <button type="submit">Add</button>
+        </form>
+        <ul>
+            {% for task in tasks %}
+            <li>
+                <span class="{{ 'done' if task.done else '' }}">{{ task.title }}</span>
+                <div>
+                    {% if not task.done %}
+                    <a href="/complete/{{ loop.index0 }}">✔️</a>
+                    {% endif %}
+                    <a href="/delete/{{ loop.index0 }}">🗑️</a>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>
