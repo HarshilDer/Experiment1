@@ -1,6 +1,14 @@
 [
     {
-        "title": "khana khana",
+        "title": "Brushing teeth",
         "done": true
+    },
+    {
+        "title": "making tea",
+        "done": true
+    },
+    {
+        "title": "sutta break",
+        "done": false
     }
 ]
